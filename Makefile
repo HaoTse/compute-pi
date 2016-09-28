@@ -26,8 +26,8 @@ check: default
 	time ./time_test_avxunroll
 
 gencsv: default
-	rm result_clock_gettime.csv | \
-	for i in `seq 1000 50000 1000000`; do \
+	rm result_clock_gettime.csv *.txt| \
+	for i in `seq 1000 5000 1000000`; do \
 		./benchmark_clock_gettime $$i; \
 	done	
 
@@ -35,4 +35,4 @@ plot: gencsv
 	gnuplot scripts/runtime.gp
 
 clean:
-	rm -f $(EXECUTABLE) *.o *.s result_clock_gettime.csv runtime.png
+	rm -f $(EXECUTABLE) *.o *.s result_clock_gettime.csv *.png *.txt

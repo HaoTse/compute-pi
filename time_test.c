@@ -3,7 +3,7 @@
 
 int main(int argc, char const *argv[])
 {
-    __attribute__((unused)) int N = 400000000;
+    __attribute__((unused)) int N = 1000;
     double pi = 0.0;
 
 #if defined(BASELINE)
