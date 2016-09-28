@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <immintrin.h>
 #include <omp.h>
+#include <math.h>
 #include "computepi.h"
 
 double compute_pi_baseline(size_t N)
@@ -116,4 +117,27 @@ double compute_pi_avx_unroll(size_t N)
           tmp3[0] + tmp3[1] + tmp3[2] + tmp3[3] +
           tmp4[0] + tmp4[1] + tmp4[2] + tmp4[3];
     return pi * 4.0;
+}
+
+double compute_ci(double *min, double *max, double data[SAMPLE_SIZE])
+{
+    double mean = 0.0;
+    double std_dev = 0.0; //standard deviation
+    int i = 0;
+
+    //calculate mean value
+    for(i = 0; i < SAMPLE_SIZE; i++)
+    {
+        mean += data[i];
+    }
+    mean /= SAMPLE_SIZE;
+
+    //calculate standard deviation
+    for(i = 0; i < SAMPLE_SIZE; i++)
+    {
+        std_dev += (data[i] - mean) * (data[i] - mean);
+    }
+    std_dev = sqrt(std_dev / (double)SAMPLE_SIZE);
+
+    return mean;
 }
