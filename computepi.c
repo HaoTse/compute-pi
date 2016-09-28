@@ -123,6 +123,7 @@ double compute_ci(double *min, double *max, double data[SAMPLE_SIZE])
 {
     double mean = 0.0;
     double std_dev = 0.0; //standard deviation
+    double std_err;
     int i = 0;
 
     //calculate mean value
@@ -130,7 +131,7 @@ double compute_ci(double *min, double *max, double data[SAMPLE_SIZE])
     {
         mean += data[i];
     }
-    mean /= SAMPLE_SIZE;
+    mean /= (double)SAMPLE_SIZE;
 
     //calculate standard deviation
     for(i = 0; i < SAMPLE_SIZE; i++)
@@ -138,6 +139,12 @@ double compute_ci(double *min, double *max, double data[SAMPLE_SIZE])
         std_dev += (data[i] - mean) * (data[i] - mean);
     }
     std_dev = sqrt(std_dev / (double)SAMPLE_SIZE);
+
+    //calculate standard deviation
+    std_err = std_dev / sqrt((double)SAMPLE_SIZE);
+
+    *min = mean - (1.96 * std_err);
+    *max = mean + (1.96 * std_err);
 
     return mean;
 }

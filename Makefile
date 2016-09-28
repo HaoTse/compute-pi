@@ -26,12 +26,12 @@ check: default
 	time ./time_test_avxunroll
 
 gencsv: default
-	for i in `seq 1000 5000 1000000`; do \
-		printf "%d, " $$i;\
+	rm result_clock_gettime.csv | \
+	for i in `seq 1000 50000 1000000`; do \
 		./benchmark_clock_gettime $$i; \
-	done > result_clock_gettime.csv	
+	done	
 
-plot: result_clock_gettime.csv
+plot: gencsv
 	gnuplot scripts/runtime.gp
 
 clean:

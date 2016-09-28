@@ -12,6 +12,7 @@ int main(int argc, char const *argv[])
     struct timespec end = {0, 0};
     double time_record[SAMPLE_SIZE];
     double min, max;
+    FILE *fp_time = fopen("result_clock_gettime.csv", "a");
 
     if (argc < 2) return -1;
 
@@ -27,7 +28,8 @@ int main(int argc, char const *argv[])
         time_record[i] = (double)(end.tv_sec - start.tv_sec) +
            (end.tv_nsec - start.tv_nsec)/ONE_SEC;
     }
-    printf("%lf, ",  compute_ci(&min, &max, time_record));
+    fprintf(fp_time, "%d, %lf, ",  N, compute_ci(&min, &max, time_record));
+    printf("compute_pi_baseline(%d) 95%%ci is [%lf, %lf]\n", N, min, max);
 
 
     // OpenMP with 2 threads
@@ -38,7 +40,8 @@ int main(int argc, char const *argv[])
         time_record[i] = (double)(end.tv_sec - start.tv_sec) +
            (end.tv_nsec - start.tv_nsec)/ONE_SEC;
     }
-    printf("%lf, ",  compute_ci(&min, &max, time_record));
+    fprintf(fp_time, "%lf, ",  compute_ci(&min, &max, time_record));
+    printf("compute_pi_openmp_2(%d) 95%%ci is [%lf, %lf]\n", N, min, max);
 
 
     // OpenMP with 4 threads
@@ -49,7 +52,8 @@ int main(int argc, char const *argv[])
         time_record[i] = (double)(end.tv_sec - start.tv_sec) +
            (end.tv_nsec - start.tv_nsec)/ONE_SEC;
     }
-    printf("%lf, ",  compute_ci(&min, &max, time_record));
+    fprintf(fp_time, "%lf, ",  compute_ci(&min, &max, time_record));
+    printf("compute_pi_openmp_4(%d) 95%%ci is [%lf, %lf]\n", N, min, max);
 
 
     // AVX SIMD
@@ -60,7 +64,9 @@ int main(int argc, char const *argv[])
         time_record[i] = (double)(end.tv_sec - start.tv_sec) +
            (end.tv_nsec - start.tv_nsec)/ONE_SEC;
     }
-    printf("%lf, ",  compute_ci(&min, &max, time_record));
+    fprintf(fp_time, "%lf, ",  compute_ci(&min, &max, time_record));
+    printf("compute_pi_avx(%d) 95%%ci is [%lf, %lf]\n", N, min, max);
+
 
     // AVX SIMD + Loop unrolling
     for(i = 0; i < loop; i++) {
@@ -70,7 +76,9 @@ int main(int argc, char const *argv[])
         time_record[i] = (double)(end.tv_sec - start.tv_sec) +
            (end.tv_nsec - start.tv_nsec)/ONE_SEC;
     }
-    printf("%lf\n",  compute_ci(&min, &max, time_record));
+    fprintf(fp_time, "%lf\n",  compute_ci(&min, &max, time_record));
+    printf("compute_pi_avx_unroll(%d) 95%%ci is [%lf, %lf]\n", N, min, max);
+    fclose(fp_time);
 
     return 0;
 }
