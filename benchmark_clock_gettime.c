@@ -13,95 +13,135 @@ int main(int argc, char const *argv[])
 {
     struct timespec start = {0, 0};
     struct timespec end = {0, 0};
-    double time_record[SAMPLE_SIZE];
+    double time_record;
     double min, max;
     FILE *fp_time = fopen("result_clock_gettime.csv", "a");
     FILE *fp_error = fopen("error_rate.txt", "a");
+    FILE *fp_ci = fopen("ci.txt", "r");
 
     if (argc < 2) return -1;
 
     int N = atoi(argv[1]);
     //SAMPLE_SIZE define in "compute.h"
     int i, loop = SAMPLE_SIZE;
+    double mean = 0.0;
 
     // Baseline
+    mean = 0.0;
+    fscanf(fp_ci, "%lf %lf", &min, &max);
     for(i = 0; i < loop; i++) {
         clock_gettime(CLOCK_ID, &start);
         compute_pi_baseline(N);
         clock_gettime(CLOCK_ID, &end);
-        time_record[i] = (double)(end.tv_sec - start.tv_sec) +
+        time_record = (double)(end.tv_sec - start.tv_sec) +
            (end.tv_nsec - start.tv_nsec)/ONE_SEC;
+        if(time_record < min && time_record > max)
+            i--;
+        else
+            mean += time_record;
     }
     fprintf(fp_error, "%d %lf ", N, compute_error(compute_pi_baseline(N))/M_PI);
-    fprintf(fp_time, "%d, %lf, ", N, compute_ci(&min, &max, time_record));
-    //printf("compute_pi_baseline(%d) 95%%ci is [%lf, %lf]\n", N, min, max);
+    mean /= (double)SAMPLE_SIZE;
+    fprintf(fp_time, "%d, %lf, ", N, mean);
 
 
     // OpenMP with 2 threads
+    mean = 0.0;
+    fscanf(fp_ci, "%lf %lf", &min, &max);
     for(i = 0; i < loop; i++) {
         clock_gettime(CLOCK_ID, &start);
         compute_pi_openmp(N, 2);
         clock_gettime(CLOCK_ID, &end);
-        time_record[i] = (double)(end.tv_sec - start.tv_sec) +
+        time_record = (double)(end.tv_sec - start.tv_sec) +
            (end.tv_nsec - start.tv_nsec)/ONE_SEC;
+        if(time_record < min && time_record > max)
+            i--;
+        else
+            mean += time_record;
     }
     fprintf(fp_error, "%lf ", compute_error(compute_pi_openmp(N, 2))/M_PI);
-    fprintf(fp_time, "%lf, ", compute_ci(&min, &max, time_record));
-    //printf("compute_pi_openmp_2(%d) 95%%ci is [%lf, %lf]\n", N, min, max);
+    mean /= (double)SAMPLE_SIZE;
+    fprintf(fp_time, "%lf, ", mean);
 
 
     // OpenMP with 4 threads
+    mean = 0.0;
+    fscanf(fp_ci, "%lf %lf", &min, &max);
     for(i = 0; i < loop; i++) {
         clock_gettime(CLOCK_ID, &start);
         compute_pi_openmp(N, 4);
         clock_gettime(CLOCK_ID, &end);
-        time_record[i] = (double)(end.tv_sec - start.tv_sec) +
+        time_record = (double)(end.tv_sec - start.tv_sec) +
            (end.tv_nsec - start.tv_nsec)/ONE_SEC;
+        if(time_record < min && time_record > max)
+            i--;
+        else
+            mean += time_record;
     }
     fprintf(fp_error, "%lf ", compute_error(compute_pi_openmp(N, 4))/M_PI);
-    fprintf(fp_time, "%lf, ", compute_ci(&min, &max, time_record));
-    //printf("compute_pi_openmp_4(%d) 95%%ci is [%lf, %lf]\n", N, min, max);
+    mean /= (double)SAMPLE_SIZE;
+    fprintf(fp_time, "%lf, ", mean);
 
 
     // AVX SIMD
+    mean = 0.0;
+    fscanf(fp_ci, "%lf %lf", &min, &max);
     for(i = 0; i < loop; i++) {
         clock_gettime(CLOCK_ID, &start);
         compute_pi_avx(N);
         clock_gettime(CLOCK_ID, &end);
-        time_record[i] = (double)(end.tv_sec - start.tv_sec) +
+        time_record = (double)(end.tv_sec - start.tv_sec) +
            (end.tv_nsec - start.tv_nsec)/ONE_SEC;
+        if(time_record < min && time_record > max)
+            i--;
+        else
+            mean += time_record;
     }
     fprintf(fp_error, "%lf ", compute_error(compute_pi_avx(N))/M_PI);
-    fprintf(fp_time, "%lf, ", compute_ci(&min, &max, time_record));
-    //printf("compute_pi_avx(%d) 95%%ci is [%lf, %lf]\n", N, min, max);
+    mean /= (double)SAMPLE_SIZE;
+    fprintf(fp_time, "%lf, ", mean);
 
 
     // AVX SIMD + Loop unrolling
+    mean = 0.0;
+    fscanf(fp_ci, "%lf %lf", &min, &max);
     for(i = 0; i < loop; i++) {
         clock_gettime(CLOCK_ID, &start);
         compute_pi_avx_unroll(N);
         clock_gettime(CLOCK_ID, &end);
-        time_record[i] = (double)(end.tv_sec - start.tv_sec) +
+        time_record = (double)(end.tv_sec - start.tv_sec) +
            (end.tv_nsec - start.tv_nsec)/ONE_SEC;
+        if(time_record < min && time_record > max)
+            i--;
+        else
+            mean += time_record;
     }
     fprintf(fp_error, "%lf ", compute_error(compute_pi_avx_unroll(N))/M_PI);
-    fprintf(fp_time, "%lf, ", compute_ci(&min, &max, time_record));
-    //printf("compute_pi_avx_unroll(%d) 95%%ci is [%lf, %lf]\n", N, min, max);
+    mean /= (double)SAMPLE_SIZE;
+    fprintf(fp_time, "%lf, ", mean);
 
 
     // LEIBNIZ
+    mean = 0.0;
+    fscanf(fp_ci, "%lf %lf", &min, &max);
     for(i = 0; i < loop; i++) {
         clock_gettime(CLOCK_ID, &start);
         compute_pi_leibniz(N);
         clock_gettime(CLOCK_ID, &end);
-        time_record[i] = (double)(end.tv_sec - start.tv_sec) +
+        time_record = (double)(end.tv_sec - start.tv_sec) +
            (end.tv_nsec - start.tv_nsec)/ONE_SEC;
+        if(time_record < min && time_record > max)
+            i--;
+        else
+            mean += time_record;
     }
     fprintf(fp_error, "%lf\n", compute_error(compute_pi_leibniz(N))/M_PI);
-    fprintf(fp_time, "%lf\n", compute_ci(&min, &max, time_record));
-    //printf("compute_pi_avx_unroll(%d) 95%%ci is [%lf, %lf]\n", N, min, max);
+    mean /= (double)SAMPLE_SIZE;
+    fprintf(fp_time, "%lf\n", mean);
+    
     fclose(fp_time);
     fclose(fp_error);
+    fclose(fp_ci);
 
     return 0;
 }

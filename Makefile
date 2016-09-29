@@ -4,7 +4,8 @@ EXECUTABLE = \
 	time_test_baseline time_test_openmp_2 time_test_openmp_4 \
 	time_test_avx time_test_avxunroll \
 	time_test_leibniz \
-	benchmark_clock_gettime
+	benchmark_clock_gettime \
+	genCI
 
 default: computepi.o
 	$(CC) $(CFLAGS) computepi.o time_test.c -DBASELINE -o time_test_baseline -lm
@@ -14,6 +15,7 @@ default: computepi.o
 	$(CC) $(CFLAGS) computepi.o time_test.c -DAVXUNROLL -o time_test_avxunroll -lm
 	$(CC) $(CFLAGS) computepi.o time_test.c -DLEIBNIZ -o time_test_leibniz -lm
 	$(CC) $(CFLAGS) computepi.o benchmark_clock_gettime.c -o benchmark_clock_gettime -lm
+	$(CC) $(CFLAGS) computepi.o genCI.c -o genCI -lm
 
 .PHONY: clean default
 
@@ -30,7 +32,8 @@ check: default
 
 gencsv: default
 	rm result_clock_gettime.csv *.txt| \
-	for i in `seq 1000 5000 1000000`; do \
+	for i in `seq 1000 50000 1000000`; do \
+		./genCI $$i; \
 		./benchmark_clock_gettime $$i; \
 	done	
 

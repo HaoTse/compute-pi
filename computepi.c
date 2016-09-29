@@ -134,16 +134,18 @@ double compute_pi_leibniz(size_t N)
 double compute_ci(double *min, double *max, double data[SAMPLE_SIZE])
 {
     double mean = 0.0;
+    double sum = 0.0;
     double std_dev = 0.0; //standard deviation
     double std_err;
+    int total = SAMPLE_SIZE;
     int i = 0;
 
     //calculate mean value
     for(i = 0; i < SAMPLE_SIZE; i++)
     {
-        mean += data[i];
+        sum += data[i];
     }
-    mean /= (double)SAMPLE_SIZE;
+    mean = sum / (double)SAMPLE_SIZE;
 
     //calculate standard deviation
     for(i = 0; i < SAMPLE_SIZE; i++)
@@ -157,6 +159,19 @@ double compute_ci(double *min, double *max, double data[SAMPLE_SIZE])
 
     *min = mean - (1.96 * std_err);
     *max = mean + (1.96 * std_err);
+
+    for(i = 0; i < SAMPLE_SIZE; i++)
+    {
+        if(data[i] < *min || data[i] > *max)
+        {
+            sum -= data[i];
+            total--;
+        }
+        else{
+            (total) ? :printf("%d\n", total);
+        }
+    }
+    mean = sum / (double)total;
 
     return mean;
 }
