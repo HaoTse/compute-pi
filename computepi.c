@@ -119,6 +119,18 @@ double compute_pi_avx_unroll(size_t N)
     return pi * 4.0;
 }
 
+double compute_pi_leibniz(size_t N)
+{
+    double pi = 0.0;
+    for(size_t i = 0; i < N; i++)
+    {
+        int sign = (i % 2) ? -1 : 1;
+        pi += (sign / (2.0 * (double)i +1.0));
+    }
+
+    return pi * 4.0;
+}
+
 double compute_ci(double *min, double *max, double data[SAMPLE_SIZE])
 {
     double mean = 0.0;

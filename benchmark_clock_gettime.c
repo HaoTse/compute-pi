@@ -84,7 +84,20 @@ int main(int argc, char const *argv[])
         time_record[i] = (double)(end.tv_sec - start.tv_sec) +
            (end.tv_nsec - start.tv_nsec)/ONE_SEC;
     }
-    fprintf(fp_error, "%lf\n", compute_error(compute_pi_avx_unroll(N))/M_PI);
+    fprintf(fp_error, "%lf ", compute_error(compute_pi_avx_unroll(N))/M_PI);
+    fprintf(fp_time, "%lf, ", compute_ci(&min, &max, time_record));
+    //printf("compute_pi_avx_unroll(%d) 95%%ci is [%lf, %lf]\n", N, min, max);
+
+
+    // LEIBNIZ
+    for(i = 0; i < loop; i++) {
+        clock_gettime(CLOCK_ID, &start);
+        compute_pi_leibniz(N);
+        clock_gettime(CLOCK_ID, &end);
+        time_record[i] = (double)(end.tv_sec - start.tv_sec) +
+           (end.tv_nsec - start.tv_nsec)/ONE_SEC;
+    }
+    fprintf(fp_error, "%lf\n", compute_error(compute_pi_leibniz(N))/M_PI);
     fprintf(fp_time, "%lf\n", compute_ci(&min, &max, time_record));
     //printf("compute_pi_avx_unroll(%d) 95%%ci is [%lf, %lf]\n", N, min, max);
     fclose(fp_time);

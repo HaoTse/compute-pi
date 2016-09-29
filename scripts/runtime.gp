@@ -11,7 +11,8 @@ plot [1000:][0:] 'result_clock_gettime.csv' using 1:2 smooth csplines lw 2 title
 '' using 1:3 smooth csplines lw 2 title 'OpenMP (2 threads)', \
 '' using 1:4 smooth csplines lw 2 title 'OpenMP (4 threads)', \
 '' using 1:5 smooth csplines lw 2 title 'AVX', \
-'' using 1:6 smooth csplines lw 2 title 'AVX + unroll looping'
+'' using 1:6 smooth csplines lw 2 title 'AVX + unroll looping', \
+'' using 1:7 smooth csplines lw 2 title 'Leibniz'
 
 reset
 set logscale x 2
@@ -26,4 +27,5 @@ plot [1000:100000][0:] 'error_rate.txt' using 1:2 smooth csplines lw 2 title 'Ba
 '' using 1:3 smooth csplines lw 2 title 'OpenMP (2 threads)', \
 '' using 1:4 smooth csplines lw 2 title 'OpenMP (4 threads)', \
 '' using 1:5 smooth csplines lw 2 title 'AVX', \
-'' using 1:6 smooth csplines lw 2 title 'AVX + unroll looping'
+'' using 1:6 smooth csplines lw 2 title 'AVX + unroll looping', \
+'' using 1:7 smooth csplines lw 2 title 'Leibniz'
